@@ -20,3 +20,21 @@ def home_view(request: HttpRequest) -> HttpResponse:
     """
     posts = Post.objects.all()
     return render(request, "posts/home.html", {"posts": posts})
+
+
+def post_create_view(request: HttpRequest) -> HttpResponse:
+    """
+    Render the post creation page.
+
+    This view simply renders the `post_create.html` template for creating a new post.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about the request.
+
+    Returns:
+        HttpResponse: A rendered HTML response for the post creation page.
+    """
+    return render(
+        request,
+        "posts/post_create.html",
+    )
