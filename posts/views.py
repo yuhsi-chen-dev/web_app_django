@@ -12,4 +12,4 @@ def home_view(request):
         HttpResponse: A rendered HTML response with the context data passed to the template.
     """
     title = "Welcome to Django"
-    return render(request, "index.html", {"title": title})
+    return render(request, "base.html", {"title": title})
