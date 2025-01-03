@@ -1,14 +1,22 @@
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 
+from .models import *
 
-def home_view(request):
+
+def home_view(request: HttpRequest) -> HttpResponse:
     """
-    View function that renders the index.html template.
+    Render the home page with a list of all posts.
+
+    This view queries all `Post` objects from the database and passes them
+    to the `home.html` template for rendering. The template can then display
+    the list of posts dynamically.
 
     Args:
-        request: The HTTP request object that contains metadata about the request.
+        request (HttpRequest): The HTTP request object containing metadata about the request.
 
     Returns:
-        HttpResponse: A rendered HTML response with the context data passed to the template.
+        HttpResponse: A rendered HTML response containing the list of posts.
     """
-    return render(request, "posts/home.html")
+    posts = Post.objects.all()
+    return render(request, "posts/home.html", {"posts": posts})
