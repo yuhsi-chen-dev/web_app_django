@@ -1,0 +1,25 @@
+*.zip
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+*.egg
+*.log
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Environment variables and secrets
+env
+*.env
+*.pem
+
+# OS generated files
+Thumbs.db  # For Windows
+Desktop.ini  # For Windows
+
+# Temporary files
+*.tmp
+*.bak
