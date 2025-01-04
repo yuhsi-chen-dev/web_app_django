@@ -1,5 +1,5 @@
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from posts.core import PostCreateForm
 
@@ -40,4 +40,11 @@ def post_create_view(request: HttpRequest) -> HttpResponse:
         context included for user input.
     """
     form = PostCreateForm()
+
+    if request.method == "POST":
+        form = PostCreateForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("home")
+
     return render(request, "posts/post_create.html", {"form": form})
