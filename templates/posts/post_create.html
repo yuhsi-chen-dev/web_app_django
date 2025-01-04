@@ -11,6 +11,7 @@
     </div>
 
     <form method='POST'>
+        {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="mt-1">Submit Post</button>
         <a class="button secondaryAction ml-1" href="">Cancel</a>
