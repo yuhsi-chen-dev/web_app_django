@@ -35,3 +35,6 @@ class Post(models.Model):
             str: The title of the post.
         """
         return str(self.title)
+
+    class Meta:
+        ordering = ["-created"]
