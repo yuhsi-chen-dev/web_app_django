@@ -1,6 +1,8 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 
+from posts.core import PostCreateForm
+
 from .models import *
 
 
@@ -24,17 +26,18 @@ def home_view(request: HttpRequest) -> HttpResponse:
 
 def post_create_view(request: HttpRequest) -> HttpResponse:
     """
-    Render the post creation page.
+    Render the post creation page with a form.
 
-    This view simply renders the `post_create.html` template for creating a new post.
+    This view renders the `post_create.html` template, which contains a form
+    for creating a new post. The form is initialized using the `PostCreateForm`
+    class, which is bound to the `Post` model.
 
     Args:
         request (HttpRequest): The HTTP request object containing metadata about the request.
 
     Returns:
-        HttpResponse: A rendered HTML response for the post creation page.
+        HttpResponse: A rendered HTML response for the post creation page, with the form
+        context included for user input.
     """
-    return render(
-        request,
-        "posts/post_create.html",
-    )
+    form = PostCreateForm()
+    return render(request, "posts/post_create.html", {"form": form})

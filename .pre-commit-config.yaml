@@ -24,7 +24,6 @@ repos:
   hooks:
   - id: isort
     name: isort (python)
-    exclude: ^src/app/core/__init__.py
 
 - repo: https://github.com/ambv/black
   rev: 24.10.0
