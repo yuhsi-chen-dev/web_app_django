@@ -19,7 +19,7 @@ class PostCreateForm(ModelForm):
 
     class Meta:
         model = Post
-        fields = "__all__"
+        fields = ["url", "body"]
         labels = {
             "body": "Caption",
         }
@@ -31,4 +31,5 @@ class PostCreateForm(ModelForm):
                     "class": "font1 text-4xl",
                 }
             ),
+            "url": forms.TextInput(attrs={"placeholder": "Add url..."}),
         }
