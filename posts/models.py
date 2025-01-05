@@ -9,6 +9,8 @@ class Post(models.Model):
 
     Attributes:
         title (str): The title of the post, limited to 500 characters.
+        artist (str): The creator of the image on Flickr, limited to 500 characters.
+        url (str): The url of the image on Flickr, limited to 500 characters.
         image (str): A URL pointing to the post's associated image, limited to 500 characters.
         body (str): The main content of the post.
         created (datetime): The timestamp when the post was created, automatically set at creation.
@@ -16,6 +18,8 @@ class Post(models.Model):
     """
 
     title = models.CharField(max_length=500)
+    artist = models.CharField(max_length=500, null=True)
+    url = models.URLField(max_length=500, null=True)
     image = models.URLField(max_length=500)
     body = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
