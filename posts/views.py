@@ -1,9 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
+from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
-from posts.core import PostCreateForm
+from posts.core import PostCreateForm, PostEditForm
 
 from .models import *
 
@@ -11,10 +12,6 @@ from .models import *
 def home_view(request: HttpRequest) -> HttpResponse:
     """
     Render the home page with a list of all posts.
-
-    This view queries all `Post` objects from the database and passes them
-    to the `home.html` template for rendering. The template can then display
-    the list of posts dynamically.
 
     Args:
         request (HttpRequest): The HTTP request object containing metadata about the request.
@@ -28,18 +25,23 @@ def home_view(request: HttpRequest) -> HttpResponse:
 
 def post_create_view(request: HttpRequest) -> HttpResponse:
     """
-    Render the post creation page with a form.
-
-    This view renders the `post_create.html` template, which contains a form
-    for creating a new post. The form is initialized using the `PostCreateForm`
-    class, which is bound to the `Post` model.
+    Render the post creation page and handle form submissions.
 
     Args:
-        request (HttpRequest): The HTTP request object containing metadata about the request.
+        request (HttpRequest): The HTTP request object.
 
     Returns:
-        HttpResponse: A rendered HTML response for the post creation page, with the form
-        context included for user input.
+        HttpResponse:
+            - A rendered HTML response for the post creation page (GET request).
+            - A redirect to the home page upon successful post creation (POST request).
+
+    Key Operations:
+        - Fetch metadata (image, title, artist) from the provided URL.
+        - Save the data to the `Post` model.
+
+    Dependencies:
+        - requests: Fetch external web page content.
+        - BeautifulSoup: Parse HTML to extract specific data.
     """
     form = PostCreateForm()
 
@@ -69,3 +71,82 @@ def post_create_view(request: HttpRequest) -> HttpResponse:
             return redirect("home")
 
     return render(request, "posts/post_create.html", {"form": form})
+
+
+def post_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
+    """
+    Handle the deletion of a post or raise a 404 error if not found.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about the request.
+        pk (str): The primary key (id) of the post to be deleted.
+
+    Returns:
+        HttpResponse:
+            - A rendered HTML response with the post details for confirmation (GET request).
+            - A redirect to the home page upon successful deletion (POST request).
+
+    Raises:
+        Http404: If no `Post` object is found with the given primary key.
+
+    Context:
+        - `post`: The post instance to be displayed for confirmation.
+    """
+    post = get_object_or_404(Post, id=pk)
+
+    if request.method == "POST":
+        post.delete()
+        messages.success(request, "Post deleted")
+        return redirect("home")
+
+    return render(request, "posts/post_delete.html", {"post": post})
+
+
+def post_edit_view(request: HttpRequest, pk: str) -> HttpResponse:
+    """
+    Handle the editing of an existing post or raise a 404 error if not found.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata
+        about the request.
+        pk (str): The primary key (id) of the post to be edited.
+
+    Returns:
+        HttpResponse:
+            - A rendered form for editing the post (GET request).
+            - A redirect to the home page after successfully updating the post (POST request).
+
+    Raises:
+        Http404: If no `Post` object is found with the given primary key.
+    """
+    post = get_object_or_404(Post, id=pk)
+    form = PostEditForm(instance=post)
+
+    if request.method == "POST":
+        form = PostEditForm(request.POST, instance=post)
+        if form.is_valid:
+            form.save()
+            messages.success(request, "Post updated")
+            return redirect("home")
+
+    context = {"post": post, "form": form}
+    return render(request, "posts/post_edit.html", context)
+
+
+def post_page_view(request: HttpRequest, pk: str) -> HttpResponse:
+    """
+    Display the details of a specific post or raise a 404 error if not found.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata
+        about the request.
+        pk (str): The primary key (id) of the post to display.
+
+    Returns:
+        HttpResponse: A rendered HTML response displaying the post's details.
+
+    Raises:
+        Http404: If no `Post` object is found with the given primary key.
+    """
+    post = get_object_or_404(Post, id=pk)
+    return render(request, "posts/post_page.html", {"post": post})
