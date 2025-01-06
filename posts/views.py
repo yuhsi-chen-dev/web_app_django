@@ -82,4 +82,9 @@ def post_create_view(request: HttpRequest) -> HttpResponse:
 
 def post_delete_view(request: HttpRequest, pk: int) -> HttpResponse:
     post = Post.objects.get(id=pk)
+
+    if request.method == "POST":
+        post.delete()
+        return redirect("home")
+
     return render(request, "posts/post_delete.html", {"post": post})
