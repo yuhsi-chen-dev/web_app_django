@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 
-from posts.core import PostCreateForm
+from posts.core import PostCreateForm, PostEditForm
 
 from .models import *
 
@@ -104,5 +104,6 @@ def post_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
 
 def post_edit_view(request: HttpRequest, pk: str) -> HttpResponse:
     post = Post.objects.get(id=pk)
-
-    return render(request, "posts/post_edit.html", {"post": post})
+    form = PostEditForm(instance=post)
+    context = {"post": post, "form": form}
+    return render(request, "posts/post_edit.html", context)
