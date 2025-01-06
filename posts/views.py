@@ -75,7 +75,7 @@ def post_create_view(request: HttpRequest) -> HttpResponse:
 
 def post_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
     """
-    Handle the deletion of a post.
+    Handle the deletion of a post or raise a 404 error if not found.
 
     Args:
         request (HttpRequest): The HTTP request object containing metadata about the request.
@@ -87,7 +87,7 @@ def post_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
             - A redirect to the home page upon successful deletion (POST request).
 
     Raises:
-        Post.DoesNotExist: If no post is found with the given primary key.
+        Http404: If no `Post` object is found with the given primary key.
 
     Context:
         - `post`: The post instance to be displayed for confirmation.
@@ -104,7 +104,7 @@ def post_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
 
 def post_edit_view(request: HttpRequest, pk: str) -> HttpResponse:
     """
-    Handle the editing of an existing post.
+    Handle the editing of an existing post or raise a 404 error if not found.
 
     Args:
         request (HttpRequest): The HTTP request object containing metadata
@@ -115,6 +115,9 @@ def post_edit_view(request: HttpRequest, pk: str) -> HttpResponse:
         HttpResponse:
             - A rendered form for editing the post (GET request).
             - A redirect to the home page after successfully updating the post (POST request).
+
+    Raises:
+        Http404: If no `Post` object is found with the given primary key.
     """
     post = get_object_or_404(Post, id=pk)
     form = PostEditForm(instance=post)
@@ -132,7 +135,7 @@ def post_edit_view(request: HttpRequest, pk: str) -> HttpResponse:
 
 def post_page_view(request: HttpRequest, pk: str) -> HttpResponse:
     """
-    Display the details of a specific post.
+    Display the details of a specific post or raise a 404 error if not found.
 
     Args:
         request (HttpRequest): The HTTP request object containing metadata
@@ -141,6 +144,9 @@ def post_page_view(request: HttpRequest, pk: str) -> HttpResponse:
 
     Returns:
         HttpResponse: A rendered HTML response displaying the post's details.
+
+    Raises:
+        Http404: If no `Post` object is found with the given primary key.
     """
     post = get_object_or_404(Post, id=pk)
     return render(request, "posts/post_page.html", {"post": post})
