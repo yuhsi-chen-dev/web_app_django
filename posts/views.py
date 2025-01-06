@@ -128,3 +128,19 @@ def post_edit_view(request: HttpRequest, pk: str) -> HttpResponse:
 
     context = {"post": post, "form": form}
     return render(request, "posts/post_edit.html", context)
+
+
+def post_page_view(request: HttpRequest, pk: str) -> HttpResponse:
+    """
+    Display the details of a specific post.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata
+        about the request.
+        pk (str): The primary key (id) of the post to display.
+
+    Returns:
+        HttpResponse: A rendered HTML response displaying the post's details.
+    """
+    post = Post.objects.get(id=pk)
+    return render(request, "posts/post_page.html", {"post": post})
