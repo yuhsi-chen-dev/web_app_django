@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 
@@ -85,6 +86,7 @@ def post_delete_view(request: HttpRequest, pk: int) -> HttpResponse:
 
     if request.method == "POST":
         post.delete()
+        messages.success(request, "Post deleted")
         return redirect("home")
 
     return render(request, "posts/post_delete.html", {"post": post})
