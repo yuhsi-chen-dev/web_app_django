@@ -28,18 +28,27 @@ def home_view(request: HttpRequest) -> HttpResponse:
 
 def post_create_view(request: HttpRequest) -> HttpResponse:
     """
-    Render the post creation page with a form.
+    Render the post creation page and handle form submissions.
 
-    This view renders the `post_create.html` template, which contains a form
-    for creating a new post. The form is initialized using the `PostCreateForm`
-    class, which is bound to the `Post` model.
+    This view displays a form for creating a new post. If the form is submitted
+    via POST, it validates the input, extracts additional data from the provided
+    URL using BeautifulSoup, and saves the post to the database.
 
     Args:
-        request (HttpRequest): The HTTP request object containing metadata about the request.
+        request (HttpRequest): The HTTP request object.
 
     Returns:
-        HttpResponse: A rendered HTML response for the post creation page, with the form
-        context included for user input.
+        HttpResponse:
+            - A rendered HTML response for the post creation page (GET request).
+            - A redirect to the home page upon successful post creation (POST request).
+
+    Key Operations:
+        - Fetch metadata (image, title, artist) from the provided URL.
+        - Save the data to the `Post` model.
+
+    Dependencies:
+        - requests: Fetch external web page content.
+        - BeautifulSoup: Parse HTML to extract specific data.
     """
     form = PostCreateForm()
 
@@ -69,3 +78,7 @@ def post_create_view(request: HttpRequest) -> HttpResponse:
             return redirect("home")
 
     return render(request, "posts/post_create.html", {"form": form})
+
+
+def post_delete_view(request: HttpRequest) -> HttpResponse:
+    return render(request, "posts/post_delete.html")
