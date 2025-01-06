@@ -100,3 +100,9 @@ def post_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
         return redirect("home")
 
     return render(request, "posts/post_delete.html", {"post": post})
+
+
+def post_edit_view(request: HttpRequest, pk: str) -> HttpResponse:
+    post = Post.objects.get(id=pk)
+
+    return render(request, "posts/post_edit.html", {"post": post})
