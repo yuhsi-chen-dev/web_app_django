@@ -79,7 +79,7 @@ def post_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
 
     Args:
         request (HttpRequest): The HTTP request object containing metadata about the request.
-        pk (int): The primary key (id) of the post to be deleted.
+        pk (str): The primary key (id) of the post to be deleted.
 
     Returns:
         HttpResponse:
@@ -103,6 +103,19 @@ def post_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
 
 
 def post_edit_view(request: HttpRequest, pk: str) -> HttpResponse:
+    """
+    Handle the editing of an existing post.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata
+        about the request.
+        pk (str): The primary key (id) of the post to be edited.
+
+    Returns:
+        HttpResponse:
+            - A rendered form for editing the post (GET request).
+            - A redirect to the home page after successfully updating the post (POST request).
+    """
     post = Post.objects.get(id=pk)
     form = PostEditForm(instance=post)
 
