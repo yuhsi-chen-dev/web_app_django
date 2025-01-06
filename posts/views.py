@@ -13,10 +13,6 @@ def home_view(request: HttpRequest) -> HttpResponse:
     """
     Render the home page with a list of all posts.
 
-    This view queries all `Post` objects from the database and passes them
-    to the `home.html` template for rendering. The template can then display
-    the list of posts dynamically.
-
     Args:
         request (HttpRequest): The HTTP request object containing metadata about the request.
 
@@ -30,10 +26,6 @@ def home_view(request: HttpRequest) -> HttpResponse:
 def post_create_view(request: HttpRequest) -> HttpResponse:
     """
     Render the post creation page and handle form submissions.
-
-    This view displays a form for creating a new post. If the form is submitted
-    via POST, it validates the input, extracts additional data from the provided
-    URL using BeautifulSoup, and saves the post to the database.
 
     Args:
         request (HttpRequest): The HTTP request object.
@@ -81,7 +73,25 @@ def post_create_view(request: HttpRequest) -> HttpResponse:
     return render(request, "posts/post_create.html", {"form": form})
 
 
-def post_delete_view(request: HttpRequest, pk: int) -> HttpResponse:
+def post_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
+    """
+    Handle the deletion of a post.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about the request.
+        pk (int): The primary key (id) of the post to be deleted.
+
+    Returns:
+        HttpResponse:
+            - A rendered HTML response with the post details for confirmation (GET request).
+            - A redirect to the home page upon successful deletion (POST request).
+
+    Raises:
+        Post.DoesNotExist: If no post is found with the given primary key.
+
+    Context:
+        - `post`: The post instance to be displayed for confirmation.
+    """
     post = Post.objects.get(id=pk)
 
     if request.method == "POST":
