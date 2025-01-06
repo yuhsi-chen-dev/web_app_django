@@ -80,5 +80,6 @@ def post_create_view(request: HttpRequest) -> HttpResponse:
     return render(request, "posts/post_create.html", {"form": form})
 
 
-def post_delete_view(request: HttpRequest) -> HttpResponse:
-    return render(request, "posts/post_delete.html")
+def post_delete_view(request: HttpRequest, pk: int) -> HttpResponse:
+    post = Post.objects.get(id=pk)
+    return render(request, "posts/post_delete.html", {"post": post})
