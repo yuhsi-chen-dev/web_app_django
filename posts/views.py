@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from django.contrib import messages
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from posts.core import PostCreateForm, PostEditForm
 
@@ -92,7 +92,7 @@ def post_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
     Context:
         - `post`: The post instance to be displayed for confirmation.
     """
-    post = Post.objects.get(id=pk)
+    post = get_object_or_404(Post, id=pk)
 
     if request.method == "POST":
         post.delete()
@@ -116,7 +116,7 @@ def post_edit_view(request: HttpRequest, pk: str) -> HttpResponse:
             - A rendered form for editing the post (GET request).
             - A redirect to the home page after successfully updating the post (POST request).
     """
-    post = Post.objects.get(id=pk)
+    post = get_object_or_404(Post, id=pk)
     form = PostEditForm(instance=post)
 
     if request.method == "POST":
@@ -142,5 +142,5 @@ def post_page_view(request: HttpRequest, pk: str) -> HttpResponse:
     Returns:
         HttpResponse: A rendered HTML response displaying the post's details.
     """
-    post = Post.objects.get(id=pk)
+    post = get_object_or_404(Post, id=pk)
     return render(request, "posts/post_page.html", {"post": post})
