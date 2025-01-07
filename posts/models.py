@@ -59,6 +59,8 @@ class Tag(models.Model):
         name (str): The name of the tag, with a maximum length of 20 characters.
         slug (str): A unique slug identifier for the tag, used for URLs
             or referencing tags in a more readable format.
+        order (int, optional): A numeric value used to define the display order
+            of tags. Tags with lower values are displayed first. Can be null.
 
     Methods:
         __str__():
@@ -67,6 +69,7 @@ class Tag(models.Model):
 
     name = models.CharField(max_length=20)
     slug = models.SlugField(max_length=20, unique=True)
+    order = models.IntegerField(null=True)
 
     def __str__(self) -> str:
         """
@@ -76,3 +79,6 @@ class Tag(models.Model):
             str: The name of the tag.
         """
         return str(self.name)
+
+    class Meta:
+        ordering = ["order"]
