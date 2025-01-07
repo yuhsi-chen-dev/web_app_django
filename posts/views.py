@@ -26,10 +26,14 @@ def home_view(request: HttpRequest, tag=None) -> HttpResponse:
     """
     if tag:
         posts = Post.objects.filter(tags__slug=tag)
+        tag = get_object_or_404(Tag, slug=tag)
     else:
         posts = Post.objects.all()
 
-    return render(request, "posts/home.html", {"posts": posts})
+    categories = Tag.objects.all()
+
+    context = {"posts": posts, "categories": categories, "tag": tag}
+    return render(request, "posts/home.html", context)
 
 
 def post_create_view(request: HttpRequest) -> HttpResponse:
