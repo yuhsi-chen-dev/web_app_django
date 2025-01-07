@@ -9,32 +9,26 @@ from posts.core import PostCreateForm, PostEditForm
 from .models import *
 
 
-def home_view(request: HttpRequest) -> HttpResponse:
+def home_view(request: HttpRequest, tag=None) -> HttpResponse:
     """
-    Render the home page with a list of all posts.
+    Render the home page with a list of posts, optionally filtered by a tag.
+
+    If a tag is provided, the view filters posts to include only those
+    associated with the specified tag. Otherwise, it displays all posts.
 
     Args:
         request (HttpRequest): The HTTP request object containing metadata about the request.
+        tag (str, optional): The slug of the tag used to filter posts. Defaults to None.
 
     Returns:
-        HttpResponse: A rendered HTML response containing the list of posts.
+        HttpResponse: A rendered HTML response displaying the list of posts,
+        filtered by the specified tag if provided.
     """
-    posts = Post.objects.all()
-    return render(request, "posts/home.html", {"posts": posts})
+    if tag:
+        posts = Post.objects.filter(tags__slug=tag)
+    else:
+        posts = Post.objects.all()
 
-
-def category_view(request: HttpRequest, tag: str) -> HttpResponse:
-    """
-    Render the home page with a list of posts filtered by category.
-
-    Args:
-        request (HttpRequest): The HTTP request object containing metadata about the request.
-        tag (str): The category to filter posts by.
-
-    Returns:
-        HttpResponse: A rendered HTML response containing the filtered list of posts.
-    """
-    posts = Post.objects.filter(tags__slug=tag)
     return render(request, "posts/home.html", {"posts": posts})
 
 
