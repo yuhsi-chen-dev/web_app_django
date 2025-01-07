@@ -68,6 +68,7 @@ def post_create_view(request: HttpRequest) -> HttpResponse:
             post.artist = artist
 
             post.save()
+            form.save_m2m()
             return redirect("home")
 
     return render(request, "posts/post_create.html", {"form": form})
