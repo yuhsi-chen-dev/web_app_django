@@ -23,6 +23,21 @@ def home_view(request: HttpRequest) -> HttpResponse:
     return render(request, "posts/home.html", {"posts": posts})
 
 
+def category_view(request: HttpRequest, tag: str) -> HttpResponse:
+    """
+    Render the home page with a list of posts filtered by category.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about the request.
+        tag (str): The category to filter posts by.
+
+    Returns:
+        HttpResponse: A rendered HTML response containing the filtered list of posts.
+    """
+    posts = Post.objects.filter(tags__slug=tag)
+    return render(request, "posts/home.html", {"posts": posts})
+
+
 def post_create_view(request: HttpRequest) -> HttpResponse:
     """
     Render the post creation page and handle form submissions.
