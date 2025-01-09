@@ -3,4 +3,5 @@ from django.shortcuts import render
 
 
 def profile_view(request: HttpRequest) -> HttpResponse:
-    return render(request, "users/profile.html")
+    profile = request.user.profile
+    return render(request, "users/profile.html", {"profile": profile})
