@@ -11,6 +11,8 @@ pre-commit = "^4.0.1"
 django = "^5.1.4"
 beautifulsoup4 = "^4.12.3"
 requests = "^2.32.3"
+django-allauth = "0.54.0"
+pillow = "^11.1.0"
 
 
 [build-system]
