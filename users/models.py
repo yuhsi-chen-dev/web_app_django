@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.templatetags.static import static
 
 
 class Profile(models.Model):
@@ -30,3 +31,31 @@ class Profile(models.Model):
 
     def __str__(self):
         return str(self.user)
+
+    @property
+    def avatar(self):
+        """
+        Returns the URL of the user's avatar image if available, otherwise returns a default image URL.
+
+        Returns:
+            str: The URL of the user's avatar image or a default image URL.
+        """
+        try:
+            avatar = self.image.url
+        except:
+            avatar = static("images/avatar_default.svg")
+        return avatar
+
+    @property
+    def name(self):
+        """
+        Returns the name of the user's if available, otherwise returns a name.
+
+        Returns:
+            str: The name of the user's or a name.
+        """
+        if self.realname:
+            name = self.realname
+        else:
+            name = self.user.username
+        return name
