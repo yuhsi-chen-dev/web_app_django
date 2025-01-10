@@ -1,3 +1,5 @@
+from django.contrib import messages
+from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -55,12 +57,22 @@ def profile_edit_view(request: HttpRequest) -> HttpResponse:
 
 def profile_delete_view(request: HttpRequest) -> HttpResponse:
     """
-    Handle the profile deletion functionality for the currently logged-in user.
+    Handle the deletion of the currently logged-in user's account.
 
     Args:
-        request (HttpRequest): The HTTP request object containing user session data.
+        request (HttpRequest): The HTTP request object containing user session and authentication data.
 
     Returns:
-        HttpResponse: A redirect to the home page upon successful profile deletion.
+        HttpResponse:
+            - A redirect to the home page if the profile deletion is successful (on POST request).
+            - A rendered HTML response displaying the profile deletion confirmation page (on GET request).
     """
+    user = request.user
+
+    if request.method == "POST":
+        logout(request)
+        user.delete()
+        messages.success(request, "Account deleted, what a pity")
+        return redirect("home")
+
     return render(request, "users/profile_delete.html")
