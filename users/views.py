@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.http import HttpRequest, HttpResponse
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from users.core import ProfileForm
@@ -7,18 +7,26 @@ from users.core import ProfileForm
 
 def profile_view(request: HttpRequest, username=None) -> HttpResponse:
     """
-    Display the profile page of the currently logged-in user.
+    Display the profile page of a specific user, either the currently logged-in user or a user identified by `username`.
 
     Args:
-        request (HttpRequest): The HTTP request object containing user session data.
+        request (HttpRequest): The HTTP request object containing user session data, including the logged-in user.
+        username (str, optional): The username of a specific user whose profile is to be displayed. If not provided,
+            the profile of the currently logged-in user will be shown.
 
     Returns:
-        HttpResponse: The rendered profile page template with the user's profile data.
+        HttpResponse: A rendered HTML response containing the profile page template, populated with the user's profile data.
+
+    Raises:
+        Http404: If the profile of the specified user cannot be found.
     """
     if username:
         profile = get_object_or_404(User, username=username).profile
     else:
-        profile = request.user.profile
+        try:
+            profile = request.user.profile
+        except:
+            raise Http404("User not found")
     return render(request, "users/profile.html", {"profile": profile})
 
 
