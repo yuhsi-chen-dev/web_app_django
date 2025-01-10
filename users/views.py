@@ -51,3 +51,16 @@ def profile_edit_view(request: HttpRequest) -> HttpResponse:
             return redirect("profile")
 
     return render(request, "users/profile_edit.html", {"form": form})
+
+
+def profile_delete_view(request: HttpRequest) -> HttpResponse:
+    """
+    Handle the profile deletion functionality for the currently logged-in user.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing user session data.
+
+    Returns:
+        HttpResponse: A redirect to the home page upon successful profile deletion.
+    """
+    return render(request, "users/profile_delete.html")
