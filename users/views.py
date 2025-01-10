@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -32,6 +33,7 @@ def profile_view(request: HttpRequest, username=None) -> HttpResponse:
     return render(request, "users/profile.html", {"profile": profile})
 
 
+@login_required
 def profile_edit_view(request: HttpRequest) -> HttpResponse:
     """
     Handle the profile edit functionality for the currently logged-in user.
@@ -55,6 +57,7 @@ def profile_edit_view(request: HttpRequest) -> HttpResponse:
     return render(request, "users/profile_edit.html", {"form": form})
 
 
+@login_required
 def profile_delete_view(request: HttpRequest) -> HttpResponse:
     """
     Handle the deletion of the currently logged-in user's account.

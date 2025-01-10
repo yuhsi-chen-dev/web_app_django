@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -36,6 +37,7 @@ def home_view(request: HttpRequest, tag=None) -> HttpResponse:
     return render(request, "posts/home.html", context)
 
 
+@login_required
 def post_create_view(request: HttpRequest) -> HttpResponse:
     """
     Render the post creation page and handle form submissions.
@@ -89,6 +91,7 @@ def post_create_view(request: HttpRequest) -> HttpResponse:
     return render(request, "posts/post_create.html", {"form": form})
 
 
+@login_required
 def post_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
     """
     Handle the deletion of a post or raise a 404 error if not found.
@@ -108,7 +111,7 @@ def post_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
     Context:
         - `post`: The post instance to be displayed for confirmation.
     """
-    post = get_object_or_404(Post, id=pk)
+    post = get_object_or_404(Post, id=pk, author=request.user)
 
     if request.method == "POST":
         post.delete()
@@ -118,6 +121,7 @@ def post_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
     return render(request, "posts/post_delete.html", {"post": post})
 
 
+@login_required
 def post_edit_view(request: HttpRequest, pk: str) -> HttpResponse:
     """
     Handle the editing of an existing post or raise a 404 error if not found.
@@ -135,7 +139,7 @@ def post_edit_view(request: HttpRequest, pk: str) -> HttpResponse:
     Raises:
         Http404: If no `Post` object is found with the given primary key.
     """
-    post = get_object_or_404(Post, id=pk)
+    post = get_object_or_404(Post, id=pk, author=request.user)
     form = PostEditForm(instance=post)
 
     if request.method == "POST":
