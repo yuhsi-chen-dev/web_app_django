@@ -1,10 +1,11 @@
+from django.contrib.auth.models import User
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from users.core import ProfileForm
 
 
-def profile_view(request: HttpRequest) -> HttpResponse:
+def profile_view(request: HttpRequest, username=None) -> HttpResponse:
     """
     Display the profile page of the currently logged-in user.
 
@@ -14,7 +15,10 @@ def profile_view(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: The rendered profile page template with the user's profile data.
     """
-    profile = request.user.profile
+    if username:
+        profile = get_object_or_404(User, username=username).profile
+    else:
+        profile = request.user.profile
     return render(request, "users/profile.html", {"profile": profile})
 
 
