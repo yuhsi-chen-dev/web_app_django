@@ -358,6 +358,18 @@ requests = "*"
 requests-oauthlib = ">=0.3.0"
 
 [[package]]
+name = "django-cleanup"
+version = "9.0.0"
+description = "Deletes old files."
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "django_cleanup-9.0.0-py3-none-any.whl", hash = "sha256:19f8b0e830233f9f0f683b17181f414672a0f48afe3ea3cc80ba47ae40ad880c"},
+    {file = "django_cleanup-9.0.0.tar.gz", hash = "sha256:bb9fb560aaf62959c81e31fa40885c36bbd5854d5aa21b90df2c7e4ba633531e"},
+]
+
+[[package]]
 name = "filelock"
 version = "3.16.1"
 description = "A platform independent file lock."
@@ -798,4 +810,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.13"
-content-hash = "3506023560564a9e4a1598b40e0d5b9e2015c3fc8c539e9d1c100bbbc69952fe"
+content-hash = "5cd0f64d3f617c5332440f492bc5f231afae12fae05f717ec5585c4592bc2de5"
