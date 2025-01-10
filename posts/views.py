@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from posts.core import PostCreateForm, PostEditForm
+from posts.core import CommentCreateForm, PostCreateForm, PostEditForm
 
 from .models import *
 
@@ -169,4 +169,9 @@ def post_page_view(request: HttpRequest, pk: str) -> HttpResponse:
         Http404: If no `Post` object is found with the given primary key.
     """
     post = get_object_or_404(Post, id=pk)
-    return render(request, "posts/post_page.html", {"post": post})
+
+    commentform = CommentCreateForm()
+
+    context = {"post": post, "commentform": commentform}
+
+    return render(request, "posts/post_page.html", context)

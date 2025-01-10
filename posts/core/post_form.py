@@ -63,3 +63,29 @@ class PostEditForm(ModelForm):
             ),
             "tags": forms.CheckboxSelectMultiple(),
         }
+
+
+class CommentCreateForm(ModelForm):
+    """
+    A form class for creating new comments.
+
+    This form is bound to the `Comment` model and allows users to input data
+    for all fields in the model. It includes custom labels and widget configurations
+    for enhanced usability.
+
+    Attributes:
+        Meta: Defines metadata for the form, including the model it is bound to,
+        the fields to include, custom labels, and widget configurations.
+    """
+
+    class Meta:
+        model = Comment
+        fields = ["body"]
+        labels = {"body": ""}
+        widgets = {
+            "body": forms.TextInput(
+                attrs={
+                    "placeholder": "Add a comment ...",
+                }
+            ),
+        }
