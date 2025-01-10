@@ -1,5 +1,6 @@
 import uuid
 
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -12,6 +13,7 @@ class Post(models.Model):
         artist (str): The creator of the image on Flickr, limited to 500 characters.
         url (str): The url of the image on Flickr, limited to 500 characters.
         image (str): A URL pointing to the post's associated image, limited to 500 characters.
+        author (ForeignKey): A foreign key relationship to the `User` model.
         body (str): The main content of the post.
         tags (ManyToManyField): A many-to-many relationship with the `Tag` model,
             allowing multiple tags to be associated with a post.
@@ -27,6 +29,9 @@ class Post(models.Model):
     artist = models.CharField(max_length=500, null=True)
     url = models.URLField(max_length=500, null=True)
     image = models.URLField(max_length=500)
+    author = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="posts"
+    )
     body = models.TextField()
     tags = models.ManyToManyField("Tag")
     created = models.DateTimeField(auto_now_add=True)
