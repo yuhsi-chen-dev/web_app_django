@@ -40,12 +40,13 @@ def profile_edit_view(request: HttpRequest) -> HttpResponse:
     Handle the profile edit functionality for the currently logged-in user.
 
     Args:
-        request (HttpRequest): The HTTP request object containing user session data
-                               and potential form data for profile editing.
+        request (HttpRequest): The HTTP request object containing user session data,
+                               form data, and file uploads for profile editing.
 
     Returns:
-        HttpResponse: The rendered profile edit page template with the form or a redirect
-                      to the profile page upon successful form submission.
+        HttpResponse:
+            - The rendered HTML template for profile editing (or onboarding) with the form.
+            - A redirect to the profile page upon successful form submission.
     """
     form = ProfileForm(instance=request.user.profile)
 
