@@ -209,11 +209,11 @@ def comment_sent(request: HttpRequest, pk: str) -> HttpResponse:
 @login_required
 def comment_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
     """
-    Handle the deletion of a post or raise a 404 error if not found.
+    Handle the deletion of a comment or raise a 404 error if not found.
 
     Args:
         request (HttpRequest): The HTTP request object containing metadata about the request.
-        pk (str): The primary key (id) of the post to be deleted.
+        pk (str): The primary key (id) of the comment to be deleted.
 
     Returns:
         HttpResponse:
@@ -224,7 +224,7 @@ def comment_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
         Http404: If no `Post` object is found with the given primary key.
 
     Context:
-        - `post`: The post instance to be displayed for confirmation.
+        - `comment`: The post instance to be displayed for confirmation.
     """
     post = get_object_or_404(Comment, id=pk, author=request.user)
 
