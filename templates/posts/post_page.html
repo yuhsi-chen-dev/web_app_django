@@ -8,7 +8,8 @@
   <form class="flex items-center p-4" autocomplete="off"
   hx-post="{% url 'comment-sent' post.id %}"
   hx-target="#tab-contents"
-  hx-swap="afterbegin" >
+  hx-swap="afterbegin"
+  _="on htmx:afterRequest reset() me" >
       {% csrf_token %}
       <div class="flex-grow">
       {{ commentform }}
