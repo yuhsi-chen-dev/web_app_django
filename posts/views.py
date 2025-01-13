@@ -204,7 +204,9 @@ def comment_sent(request: HttpRequest, pk: str) -> HttpResponse:
             comment.parent_post = post
             comment.save()
 
-    return render(request, "posts/comment.html", {"comment": comment})
+    return render(
+        request, "snippets/add_comment.html", {"comment": comment, "post": post}
+    )
 
 
 @login_required
