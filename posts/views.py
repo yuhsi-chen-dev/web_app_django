@@ -175,3 +175,32 @@ def post_page_view(request: HttpRequest, pk: str) -> HttpResponse:
     context = {"post": post, "commentform": commentform}
 
     return render(request, "posts/post_page.html", context)
+
+
+@login_required
+def comment_sent(request: HttpRequest, pk: str) -> HttpResponse:
+    """
+    Handle the submission of a comment for a specific post.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata
+        about the request.
+        pk (str): The primary key (id) of the post for which the comment is being submitted.
+
+    Returns:
+        HttpResponse: A redirect to the post page after successfully adding the comment.
+
+    Raises:
+        Http404: If no `Post` object is found with the given primary key.
+    """
+    post = get_object_or_404(Post, id=pk)
+
+    if request.method == "POST":
+        form = CommentCreateForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.author = request.user
+            comment.parent_post = post
+            comment.save()
+
+    return redirect("post", post.id)
