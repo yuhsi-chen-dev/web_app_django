@@ -195,6 +195,7 @@ def comment_sent(request: HttpRequest, pk: str) -> HttpResponse:
         Http404: If no `Post` object is found with the given primary key.
     """
     post = get_object_or_404(Post, id=pk)
+    replyform = ReplyCreateForm()
 
     if request.method == "POST":
         form = CommentCreateForm(request.POST)
@@ -204,7 +205,9 @@ def comment_sent(request: HttpRequest, pk: str) -> HttpResponse:
             comment.parent_post = post
             comment.save()
 
-    return redirect("post", post.id)
+    context = {"comment": comment, "post": post, "replyform": replyform}
+
+    return render(request, "snippets/add_comment.html", context)
 
 
 @login_required
@@ -254,6 +257,7 @@ def reply_sent(request: HttpRequest, pk: str) -> HttpResponse:
         Http404: If no `Comment` object is found with the given primary key.
     """
     comment = get_object_or_404(Comment, id=pk)
+    replyform = ReplyCreateForm()
 
     if request.method == "POST":
         form = ReplyCreateForm(request.POST)
@@ -263,7 +267,9 @@ def reply_sent(request: HttpRequest, pk: str) -> HttpResponse:
             reply.parent_comment = comment
             reply.save()
 
-    return redirect("post", comment.parent_post.id)
+    context = {"comment": comment, "reply": reply, "replyform": replyform}
+
+    return render(request, "snippets/add_reply.html", context)
 
 
 @login_required
