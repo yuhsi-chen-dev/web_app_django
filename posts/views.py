@@ -204,7 +204,7 @@ def comment_sent(request: HttpRequest, pk: str) -> HttpResponse:
             comment.parent_post = post
             comment.save()
 
-    return redirect("post", post.id)
+    return render(request, "posts/comment.html", {"comment": comment})
 
 
 @login_required
