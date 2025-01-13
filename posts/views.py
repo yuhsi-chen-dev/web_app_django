@@ -264,3 +264,33 @@ def reply_sent(request: HttpRequest, pk: str) -> HttpResponse:
             reply.save()
 
     return redirect("post", comment.parent_post.id)
+
+
+@login_required
+def reply_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
+    """
+    Handle the deletion of a reply or raise a 404 error if not found.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about the request.
+        pk (str): The primary key (id) of the reply to be deleted.
+
+    Returns:
+        HttpResponse:
+            - A rendered HTML response with the post details for confirmation (GET request).
+            - A redirect to the home page upon successful deletion (POST request).
+
+    Raises:
+        Http404: If no `Reply` object is found with the given primary key.
+
+    Context:
+        - `comment`: The post instance to be displayed for confirmation.
+    """
+    reply = get_object_or_404(Reply, id=pk, author=request.user)
+
+    if request.method == "POST":
+        reply.delete()
+        messages.success(request, "Reply deleted")
+        return redirect("post", reply.parent_comment.parent_post.id)
+
+    return render(request, "posts/reply_delete.html", {"reply": reply})
