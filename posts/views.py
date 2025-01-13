@@ -204,3 +204,33 @@ def comment_sent(request: HttpRequest, pk: str) -> HttpResponse:
             comment.save()
 
     return redirect("post", post.id)
+
+
+@login_required
+def comment_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
+    """
+    Handle the deletion of a post or raise a 404 error if not found.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about the request.
+        pk (str): The primary key (id) of the post to be deleted.
+
+    Returns:
+        HttpResponse:
+            - A rendered HTML response with the post details for confirmation (GET request).
+            - A redirect to the home page upon successful deletion (POST request).
+
+    Raises:
+        Http404: If no `Post` object is found with the given primary key.
+
+    Context:
+        - `post`: The post instance to be displayed for confirmation.
+    """
+    post = get_object_or_404(Comment, id=pk, author=request.user)
+
+    if request.method == "POST":
+        post.delete()
+        messages.success(request, "Comment deleted")
+        return redirect("post", post.parent_post.id)
+
+    return render(request, "posts/comment_delete.html", {"comment": post})
