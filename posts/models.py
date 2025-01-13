@@ -226,6 +226,9 @@ class Reply(models.Model):
             indicating the comment that the reply is associated with. Deleting the comment
             will delete all associated replies.
         body (str): The text content of the reply, with a maximum length of 150 characters.
+        likes (ManyToManyField): A many-to-many relationship with the `User` model,
+            indicating which users have liked the reply. The relationship is managed
+            through the `LikedReply` intermediate model.
         created (datetime): The timestamp when the reply was created, automatically set at creation.
         id (str): A unique identifier for the reply, generated using UUID4.
 
@@ -242,6 +245,9 @@ class Reply(models.Model):
         Comment, on_delete=models.CASCADE, related_name="replies"
     )
     body = models.CharField(max_length=150)
+    likes = models.ManyToManyField(
+        User, related_name="likedreplies", through="LikedReply"
+    )
     created = models.DateTimeField(auto_now_add=True)
     id = models.CharField(
         max_length=100,
@@ -267,3 +273,33 @@ class Reply(models.Model):
 
     class Meta:
         ordering = ["-created"]
+
+
+class LikedReply(models.Model):
+    """
+    A model representing a user liking a reply.
+
+    Attributes:
+        user (ForeignKey): A foreign key relationship to the `User` model,
+            indicating the user who liked the reply.
+        comment (ForeignKey): A foreign key relationship to the `Reply` model,
+            indicating the reply that was liked.
+        created (datetime): The timestamp when the reply was liked, automatically set at creation.
+
+    Methods:
+        __str__():
+            Returns a string representation of the liked reply, typically the reply's body.
+    """
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    reply = models.ForeignKey(Reply, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        """
+        Return a string representation of the liked reply.
+
+        Returns:
+            str: The body of the liked reply.
+        """
+        return f"{self.user.username} : {self.reply.body[:30]}"

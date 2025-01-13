@@ -325,3 +325,9 @@ def like_post(request: HttpRequest, post) -> HttpResponse:
 @like_toggle(Comment)
 def like_comment(request: HttpRequest, post) -> HttpResponse:
     return render(request, "snippets/likes_comment.html", {"comment": post})
+
+
+@login_required
+@like_toggle(Reply)
+def like_reply(request: HttpRequest, post) -> HttpResponse:
+    return render(request, "snippets/likes_reply.html", {"reply": post})
