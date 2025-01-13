@@ -296,27 +296,32 @@ def reply_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
     return render(request, "posts/reply_delete.html", {"reply": reply})
 
 
-def like_post(request: HttpRequest, pk: str) -> HttpResponse:
-    """
-    Handle the liking of a post.
+def like_toggle(model):
+    def inner_func(func):
+        def wrapper(request, *args, **kwargs):
+            post = get_object_or_404(model, id=kwargs.get("pk"))
+            user_exist = post.likes.filter(username=request.user.username).exists()
 
-    Args:
-        request (HttpRequest): The HTTP request object containing metadata about the request.
-        pk (str): The primary key (id) of the post to be liked.
+            if post.author != request.user:
+                if user_exist:
+                    post.likes.remove(request.user)
+                else:
+                    post.likes.add(request.user)
 
-    Returns:
-        HttpResponse: A redirect to the post page after successfully liking the post.
+            return func(request, post)
 
-    Raises:
-        Http404: If no `Post` object is found with the given primary key.
-    """
-    post = get_object_or_404(Post, id=pk)
-    user_exist = post.likes.filter(username=request.user.username).exists()
+        return wrapper
 
-    if post.author != request.user:
-        if user_exist:
-            post.likes.remove(request.user)
-        else:
-            post.likes.add(request.user)
+    return inner_func
 
+
+@login_required
+@like_toggle(Post)
+def like_post(request: HttpRequest, post) -> HttpResponse:
     return render(request, "snippets/likes.html", {"post": post})
+
+
+@login_required
+@like_toggle(Comment)
+def like_comment(request: HttpRequest, post) -> HttpResponse:
+    return render(request, "snippets/likes_comment.html", {"comment": post})
