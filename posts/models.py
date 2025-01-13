@@ -15,6 +15,9 @@ class Post(models.Model):
         image (str): A URL pointing to the post's associated image, limited to 500 characters.
         author (ForeignKey): A foreign key relationship to the `User` model.
         body (str): The main content of the post.
+        likes (ManyToManyField): A many-to-many relationship with the `User` model,
+            indicating which users have liked the post. The relationship is managed
+            through the `LikedPost` intermediate model.
         tags (ManyToManyField): A many-to-many relationship with the `Tag` model,
             allowing multiple tags to be associated with a post.
         created (datetime): The timestamp when the post was created, automatically set at creation.
@@ -33,6 +36,7 @@ class Post(models.Model):
         User, on_delete=models.SET_NULL, null=True, related_name="posts"
     )
     body = models.TextField()
+    likes = models.ManyToManyField(User, related_name="likedposts", through="LikedPost")
     tags = models.ManyToManyField("Tag")
     created = models.DateTimeField(auto_now_add=True)
     id = models.CharField(
@@ -54,6 +58,36 @@ class Post(models.Model):
 
     class Meta:
         ordering = ["-created"]
+
+
+class LikedPost(models.Model):
+    """
+    A model representing a user liking a post.
+
+    Attributes:
+        user (ForeignKey): A foreign key relationship to the `User` model,
+            indicating the user who liked the post.
+        post (ForeignKey): A foreign key relationship to the `Post` model,
+            indicating the post that was liked.
+        created (datetime): The timestamp when the post was liked, automatically set at creation.
+
+    Methods:
+        __str__():
+            Returns a string representation of the liked post, typically the post's title.
+    """
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        """
+        Return a string representation of the liked post.
+
+        Returns:
+            str: The title of the liked post.
+        """
+        return f"{self.user.username} : {self.post.title}"
 
 
 class Tag(models.Model):
