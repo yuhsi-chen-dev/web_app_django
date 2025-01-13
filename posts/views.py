@@ -319,4 +319,4 @@ def like_post(request: HttpRequest, pk: str) -> HttpResponse:
         else:
             post.likes.add(request.user)
 
-    return HttpResponse(post.likes.count())
+    return render(request, "snippets/likes.html", {"post": post})
