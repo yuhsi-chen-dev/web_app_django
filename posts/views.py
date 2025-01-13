@@ -294,3 +294,29 @@ def reply_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
         return redirect("post", reply.parent_comment.parent_post.id)
 
     return render(request, "posts/reply_delete.html", {"reply": reply})
+
+
+def like_post(request: HttpRequest, pk: str) -> HttpResponse:
+    """
+    Handle the liking of a post.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about the request.
+        pk (str): The primary key (id) of the post to be liked.
+
+    Returns:
+        HttpResponse: A redirect to the post page after successfully liking the post.
+
+    Raises:
+        Http404: If no `Post` object is found with the given primary key.
+    """
+    post = get_object_or_404(Post, id=pk)
+    user_exist = post.likes.filter(username=request.user.username).exists()
+
+    if post.author != request.user:
+        if user_exist:
+            post.likes.remove(request.user)
+        else:
+            post.likes.add(request.user)
+
+    return redirect("post", post.id)
