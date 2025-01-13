@@ -135,6 +135,9 @@ class Comment(models.Model):
             indicating the post that the comment is associated with. Deleting the post
             will delete all associated comments.
         body (str): The text content of the comment, with a maximum length of 150 characters.
+        likes (ManyToManyField): A many-to-many relationship with the `User` model,
+            indicating which users have liked the comment. The relationship is managed
+            through the `LikedComment` intermediate model.
         created (datetime): The timestamp when the comment was created,
             automatically set at creation.
         id (str): A unique identifier for the comment, generated using UUID4.
@@ -152,6 +155,9 @@ class Comment(models.Model):
         Post, on_delete=models.CASCADE, related_name="comments"
     )
     body = models.CharField(max_length=150)
+    likes = models.ManyToManyField(
+        User, related_name="likedcomments", through="LikedComment"
+    )
     created = models.DateTimeField(auto_now_add=True)
     id = models.CharField(
         max_length=100,
@@ -177,6 +183,36 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ["-created"]
+
+
+class LikedComment(models.Model):
+    """
+    A model representing a user liking a comment.
+
+    Attributes:
+        user (ForeignKey): A foreign key relationship to the `User` model,
+            indicating the user who liked the post.
+        comment (ForeignKey): A foreign key relationship to the `Comment` model,
+            indicating the comment that was liked.
+        created (datetime): The timestamp when the comment was liked, automatically set at creation.
+
+    Methods:
+        __str__():
+            Returns a string representation of the liked comment, typically the comment's body.
+    """
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        """
+        Return a string representation of the liked comment.
+
+        Returns:
+            str: The body of the liked comment.
+        """
+        return f"{self.user.username} : {self.comment.body[:30]}"
 
 
 class Reply(models.Model):
