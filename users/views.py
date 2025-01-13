@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from users.core import ProfileForm
 
@@ -39,12 +40,13 @@ def profile_edit_view(request: HttpRequest) -> HttpResponse:
     Handle the profile edit functionality for the currently logged-in user.
 
     Args:
-        request (HttpRequest): The HTTP request object containing user session data
-                               and potential form data for profile editing.
+        request (HttpRequest): The HTTP request object containing user session data,
+                               form data, and file uploads for profile editing.
 
     Returns:
-        HttpResponse: The rendered profile edit page template with the form or a redirect
-                      to the profile page upon successful form submission.
+        HttpResponse:
+            - The rendered HTML template for profile editing (or onboarding) with the form.
+            - A redirect to the profile page upon successful form submission.
     """
     form = ProfileForm(instance=request.user.profile)
 
@@ -53,8 +55,12 @@ def profile_edit_view(request: HttpRequest) -> HttpResponse:
         if form.is_valid():
             form.save()
             return redirect("profile")
+    if request.path == reverse("profile-onboarding"):
+        template = "users/profile_onboarding.html"
+    else:
+        template = "users/profile_edit.html"
 
-    return render(request, "users/profile_edit.html", {"form": form})
+    return render(request, template, {"form": form})
 
 
 @login_required
