@@ -19,11 +19,13 @@
   </p>
   <div x-data="{ repliesOpen: false }" class="flex items-center justify-between flex-wrap text-sm px-2">
       <a @click="repliesOpen = !repliesOpen" class="font-bold hover:underline cursor-pointer">
+          {% if comment.replies.count or user.is_authenticated %}
           <div class="inline-block" x-bind:class="repliesOpen && 'rotate-90 duration-300'">
               <svg transform ="rotate(90)" width="9" height="9" viewBox="0 0 25 25">
                   <path d="M24 22h-24l12-20z"/>
               </svg>
           </div>
+          {% endif %}
           {% if comment.replies.count %}
           Replies
           <span id="repliescount-{{ comment.id }}" class="font-light text-gray-500 ml-1">{{ comment.replies.count }}</span>
@@ -42,7 +44,7 @@
           {% for reply in comment.replies.all %}
           {% include 'posts/reply.html' %}
           {% endfor %}
-
+          {% if user.is_authenticated %}
           <form class="replyform flex justify-between" autocomplete="off"
           hx-post="{% url 'reply-sent' comment.id %}"
           hx-target="this"
@@ -53,6 +55,7 @@
               </div>
               <button class="block" type="submit">Submit</button>
           </form>
+          {% endif %}
       </div>
   </div>
 </comment>
