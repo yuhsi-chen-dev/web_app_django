@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from posts.core import PostCreateForm, PostEditForm
+from posts.core import CommentCreateForm, PostCreateForm, PostEditForm, ReplyCreateForm
 
 from .models import *
 
@@ -169,4 +169,128 @@ def post_page_view(request: HttpRequest, pk: str) -> HttpResponse:
         Http404: If no `Post` object is found with the given primary key.
     """
     post = get_object_or_404(Post, id=pk)
-    return render(request, "posts/post_page.html", {"post": post})
+
+    commentform = CommentCreateForm()
+    replyform = ReplyCreateForm()
+
+    context = {"post": post, "commentform": commentform, "replyform": replyform}
+
+    return render(request, "posts/post_page.html", context)
+
+
+@login_required
+def comment_sent(request: HttpRequest, pk: str) -> HttpResponse:
+    """
+    Handle the submission of a comment for a specific post.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata
+        about the request.
+        pk (str): The primary key (id) of the post for which the comment is being submitted.
+
+    Returns:
+        HttpResponse: A redirect to the post page after successfully adding the comment.
+
+    Raises:
+        Http404: If no `Post` object is found with the given primary key.
+    """
+    post = get_object_or_404(Post, id=pk)
+
+    if request.method == "POST":
+        form = CommentCreateForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.author = request.user
+            comment.parent_post = post
+            comment.save()
+
+    return redirect("post", post.id)
+
+
+@login_required
+def comment_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
+    """
+    Handle the deletion of a comment or raise a 404 error if not found.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about the request.
+        pk (str): The primary key (id) of the comment to be deleted.
+
+    Returns:
+        HttpResponse:
+            - A rendered HTML response with the post details for confirmation (GET request).
+            - A redirect to the home page upon successful deletion (POST request).
+
+    Raises:
+        Http404: If no `Post` object is found with the given primary key.
+
+    Context:
+        - `comment`: The post instance to be displayed for confirmation.
+    """
+    post = get_object_or_404(Comment, id=pk, author=request.user)
+
+    if request.method == "POST":
+        post.delete()
+        messages.success(request, "Comment deleted")
+        return redirect("post", post.parent_post.id)
+
+    return render(request, "posts/comment_delete.html", {"comment": post})
+
+
+@login_required
+def reply_sent(request: HttpRequest, pk: str) -> HttpResponse:
+    """
+    Handle the submission of a reply for a specific comment.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata
+        about the request.
+        pk (str): The primary key (id) of the post for which the reply is being submitted.
+
+    Returns:
+        HttpResponse: A redirect to the post page after successfully adding the reply.
+
+    Raises:
+        Http404: If no `Comment` object is found with the given primary key.
+    """
+    comment = get_object_or_404(Comment, id=pk)
+
+    if request.method == "POST":
+        form = ReplyCreateForm(request.POST)
+        if form.is_valid():
+            reply = form.save(commit=False)
+            reply.author = request.user
+            reply.parent_comment = comment
+            reply.save()
+
+    return redirect("post", comment.parent_post.id)
+
+
+@login_required
+def reply_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
+    """
+    Handle the deletion of a reply or raise a 404 error if not found.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about the request.
+        pk (str): The primary key (id) of the reply to be deleted.
+
+    Returns:
+        HttpResponse:
+            - A rendered HTML response with the post details for confirmation (GET request).
+            - A redirect to the home page upon successful deletion (POST request).
+
+    Raises:
+        Http404: If no `Reply` object is found with the given primary key.
+
+    Context:
+        - `comment`: The post instance to be displayed for confirmation.
+    """
+    reply = get_object_or_404(Reply, id=pk, author=request.user)
+
+    if request.method == "POST":
+        reply.delete()
+        messages.success(request, "Reply deleted")
+        return redirect("post", reply.parent_comment.parent_post.id)
+
+    return render(request, "posts/reply_delete.html", {"reply": reply})

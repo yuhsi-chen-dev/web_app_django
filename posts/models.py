@@ -88,3 +88,112 @@ class Tag(models.Model):
 
     class Meta:
         ordering = ["order"]
+
+
+class Comment(models.Model):
+    """
+    Represents a comment made on a blog post.
+
+    Attributes:
+        author (ForeignKey): A foreign key relationship to the `User` model,
+            indicating the user who made the comment. Can be null if the user is deleted.
+        parent_post (ForeignKey): A foreign key relationship to the `Post` model,
+            indicating the post that the comment is associated with. Deleting the post
+            will delete all associated comments.
+        body (str): The text content of the comment, with a maximum length of 150 characters.
+        created (datetime): The timestamp when the comment was created,
+            automatically set at creation.
+        id (str): A unique identifier for the comment, generated using UUID4.
+
+    Methods:
+        __str__():
+            Returns a string representation of the comment, typically in the format:
+            "<author.username>: <first 30 characters of body>".
+    """
+
+    author = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="comments"
+    )
+    parent_post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="comments"
+    )
+    body = models.CharField(max_length=150)
+    created = models.DateTimeField(auto_now_add=True)
+    id = models.CharField(
+        max_length=100,
+        default=uuid.uuid4,
+        unique=True,
+        primary_key=True,
+        editable=False,
+    )
+
+    def __str__(self) -> str:
+        """
+        Return a string representation of the comment.
+
+        Returns:
+            str: A formatted string containing the author's username and
+                 the first 30 characters of the comment body. If the author
+                 is None, 'Anonymous' is used instead of the username.
+        """
+        try:
+            return f"{self.author.username} : {self.body[:30]}"
+        except:
+            return f"Anonymous : {self.body[:30]}"
+
+    class Meta:
+        ordering = ["-created"]
+
+
+class Reply(models.Model):
+    """
+    Represents a reply to a comment on a blog post.
+
+    Attributes:
+        author (ForeignKey): A foreign key relationship to the `User` model,
+            indicating the user who made the reply. Can be null if the user is deleted.
+        parent_comment (ForeignKey): A foreign key relationship to the `Comment` model,
+            indicating the comment that the reply is associated with. Deleting the comment
+            will delete all associated replies.
+        body (str): The text content of the reply, with a maximum length of 150 characters.
+        created (datetime): The timestamp when the reply was created, automatically set at creation.
+        id (str): A unique identifier for the reply, generated using UUID4.
+
+    Methods:
+        __str__():
+            Returns a string representation of the reply, typically in the format:
+            "<author.username>: <first 30 characters of body>".
+    """
+
+    author = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="replies"
+    )
+    parent_comment = models.ForeignKey(
+        Comment, on_delete=models.CASCADE, related_name="replies"
+    )
+    body = models.CharField(max_length=150)
+    created = models.DateTimeField(auto_now_add=True)
+    id = models.CharField(
+        max_length=100,
+        default=uuid.uuid4,
+        unique=True,
+        primary_key=True,
+        editable=False,
+    )
+
+    def __str__(self) -> str:
+        """
+        Return a string representation of the reply.
+
+        Returns:
+            str: A formatted string containing the author's username and
+                 the first 30 characters of the reply body. If the author
+                 is None, 'Anonymous' is used instead of the username.
+        """
+        try:
+            return f"{self.author.username} : {self.body[:30]}"
+        except:
+            return f"Anonymous : {self.body[:30]}"
+
+    class Meta:
+        ordering = ["-created"]
