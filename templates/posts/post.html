@@ -44,14 +44,18 @@
                   {% else %}
                   <img class="w-4 -mt-1" src="{% static 'images/fireheart.svg' %}">
                   {% endif %}
-                  {{ post.likes.count }}
+                  <div id="like-{{ post.id }}">{{ post.likes.count }}</div>
               </div>
               {% if user.is_authenticated and user != post.author %}
-                {% if user in post.likes.all %}
-                <a href="{% url 'like-post' post.id %}"><b>Liked</b></a>
-                {% else %}
-                <a href="{% url 'like-post' post.id %}">Like</a>
-                {% endif %}
+                <a class="cursor-pointer" hx-get="{% url 'like-post' post.id %}"
+                hx-target="#like-{{ post.id }}"
+                hx-swap="innerHTML">
+                  {% if user in post.likes.all %}
+                  <b>Liked</b>
+                  {% else %}
+                  Like
+                  {% endif %}
+                </a>
               {% endif %}
               {% if user.is_authenticated and user == post.author %}
               <a href="{% url 'post-edit' post.id %}">Edit</a>
