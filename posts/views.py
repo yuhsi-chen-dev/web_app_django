@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from posts.core import CommentCreateForm, PostCreateForm, PostEditForm
+from posts.core import CommentCreateForm, PostCreateForm, PostEditForm, ReplyCreateForm
 
 from .models import *
 
@@ -171,8 +171,9 @@ def post_page_view(request: HttpRequest, pk: str) -> HttpResponse:
     post = get_object_or_404(Post, id=pk)
 
     commentform = CommentCreateForm()
+    replyform = ReplyCreateForm()
 
-    context = {"post": post, "commentform": commentform}
+    context = {"post": post, "commentform": commentform, "replyform": replyform}
 
     return render(request, "posts/post_page.html", context)
 
@@ -234,3 +235,32 @@ def comment_delete_view(request: HttpRequest, pk: str) -> HttpResponse:
         return redirect("post", post.parent_post.id)
 
     return render(request, "posts/comment_delete.html", {"comment": post})
+
+
+@login_required
+def reply_sent(request: HttpRequest, pk: str) -> HttpResponse:
+    """
+    Handle the submission of a reply for a specific comment.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata
+        about the request.
+        pk (str): The primary key (id) of the post for which the reply is being submitted.
+
+    Returns:
+        HttpResponse: A redirect to the post page after successfully adding the reply.
+
+    Raises:
+        Http404: If no `Comment` object is found with the given primary key.
+    """
+    comment = get_object_or_404(Comment, id=pk)
+
+    if request.method == "POST":
+        form = ReplyCreateForm(request.POST)
+        if form.is_valid():
+            reply = form.save(commit=False)
+            reply.author = request.user
+            reply.parent_comment = comment
+            reply.save()
+
+    return redirect("post", comment.parent_post.id)

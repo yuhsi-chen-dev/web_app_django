@@ -47,8 +47,9 @@
           {% include 'posts/reply.html' %}
           {% endfor %}
 
-          <form method="POST" class="replyform flex justify-between" autocomplete="off">
-              <input type="text" name="reply" placeholder="Add reply ..." maxlength="150">
+          <form method="POST" action="{% url 'reply-sent' comment.id %}" class="replyform flex justify-between" autocomplete="off">
+              {% csrf_token %}
+              {{ replyform}}
               <button class="block" type="submit">Submit</button>
           </form>
       </div>
