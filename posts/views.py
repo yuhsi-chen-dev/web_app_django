@@ -32,9 +32,7 @@ def home_view(request: HttpRequest, tag=None) -> HttpResponse:
     else:
         posts = Post.objects.all()
 
-    categories = Tag.objects.all()
-
-    context = {"posts": posts, "categories": categories, "tag": tag}
+    context = {"posts": posts, "tag": tag}
     return render(request, "posts/home.html", context)
 
 
@@ -176,7 +174,6 @@ def post_page_view(request: HttpRequest, pk: str) -> HttpResponse:
 
     if request.htmx:
         if "top" in request.GET:
-            # comments = post.comments.filter(likes__isnull=False).distinct()
             comments = (
                 post.comments.annotate(likes_count=Count("likes"))
                 .filter(likes_count__gt=0)
