@@ -173,6 +173,12 @@ def post_page_view(request: HttpRequest, pk: str) -> HttpResponse:
     commentform = CommentCreateForm()
     replyform = ReplyCreateForm()
 
+    if request.htmx:
+        comments = post.comments.all()
+        return render(
+            request, "snippets/loop_postpage_comments.html", {"comments": comments}
+        )
+
     context = {"post": post, "commentform": commentform, "replyform": replyform}
 
     return render(request, "posts/post_page.html", context)
