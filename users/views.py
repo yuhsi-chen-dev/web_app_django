@@ -31,7 +31,12 @@ def profile_view(request: HttpRequest, username=None) -> HttpResponse:
             profile = request.user.profile
         except:
             raise Http404("User not found")
-    return render(request, "users/profile.html", {"profile": profile})
+
+    posts = profile.user.posts.all()
+
+    context = {"profile": profile, "posts": posts}
+
+    return render(request, "users/profile.html", context)
 
 
 @login_required
