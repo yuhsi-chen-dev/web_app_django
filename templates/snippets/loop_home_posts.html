@@ -3,7 +3,8 @@
   {% include 'posts/post.html' %}
   {% endfor %}
 
-  <div hx-get="{% url 'home' %}?page={{ page|add:1 }}"
+  <div hx-get="{% if tag %}{% url 'category' tag.slug %}{% else %}
+              {% url 'home' %}{% endif %}?page={{ page|add:1 }}"
       hx-trigger="revealed"
       hx-target="this"
       hx-swap="outerHTML">
