@@ -2,10 +2,12 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models import Count
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
+from posts.core import ReplyCreateForm
 from users.core import ProfileForm
 
 
@@ -19,10 +21,17 @@ def profile_view(request: HttpRequest, username=None) -> HttpResponse:
             the profile of the currently logged-in user will be shown.
 
     Returns:
-        HttpResponse: A rendered HTML response containing the profile page template, populated with the user's profile data.
+        HttpResponse: A rendered HTML response containing the profile page template, populated with the user's profile data
+                      and the user's posts. If the request is made via HTMX, a partial HTML response for the posts or comments
+                      is returned.
 
     Raises:
-        Http404: If the profile of the specified user cannot be found.
+        Http404: If the profile of the specified user cannot be found or if the logged-in user does not have a profile.
+
+    HTMX Options:
+        - `top-posts`: Fetches posts sorted by the number of likes, displaying only posts with likes greater than zero.
+        - `top-comments`: Fetches comments sorted by the number of likes, displaying only comments with likes greater than zero.
+        - `liked-posts`: Fetches posts that the user has liked, ordered by the time they were liked.
     """
     if username:
         profile = get_object_or_404(User, username=username).profile
@@ -31,7 +40,35 @@ def profile_view(request: HttpRequest, username=None) -> HttpResponse:
             profile = request.user.profile
         except:
             raise Http404("User not found")
-    return render(request, "users/profile.html", {"profile": profile})
+
+    posts = profile.user.posts.all()
+
+    if request.htmx:
+        if "top-posts" in request.GET:
+            posts = (
+                profile.user.posts.annotate(num_likes=Count("likes"))
+                .filter(num_likes__gt=0)
+                .order_by("-num_likes")
+            )
+        elif "top-comments" in request.GET:
+            comments = (
+                profile.user.comments.annotate(num_likes=Count("likes"))
+                .filter(num_likes__gt=0)
+                .order_by("-num_likes")
+            )
+            replyform = ReplyCreateForm()
+            return render(
+                request,
+                "snippets/loop_profile_comments.html",
+                {"comments": comments, "replyform": replyform},
+            )
+        elif "liked-posts" in request.GET:
+            posts = profile.user.likedposts.order_by("-likedpost__created")
+        return render(request, "snippets/loop_profile_posts.html", {"posts": posts})
+
+    context = {"profile": profile, "posts": posts}
+
+    return render(request, "users/profile.html", context)
 
 
 @login_required
