@@ -43,6 +43,15 @@ def profile_view(request: HttpRequest, username=None) -> HttpResponse:
                 .order_by("-num_likes")
             )
             return render(request, "snippets/loop_profile_posts.html", {"posts": posts})
+        elif "top-comments" in request.GET:
+            comments = (
+                profile.user.comments.annotate(num_likes=Count("likes"))
+                .filter(num_likes__gt=0)
+                .order_by("-num_likes")
+            )
+            return render(
+                request, "snippets/loop_profile_comments.html", {"comments": comments}
+            )
 
     context = {"profile": profile, "posts": posts}
 
