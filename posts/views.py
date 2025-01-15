@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.db.models import Count
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -32,7 +33,11 @@ def home_view(request: HttpRequest, tag=None) -> HttpResponse:
     else:
         posts = Post.objects.all()
 
-    context = {"posts": posts, "tag": tag}
+    paginator = Paginator(posts, 3)
+    page = int(request.GET.get("page", 1))
+    posts = paginator.page(page)
+
+    context = {"posts": posts, "tag": tag, "page": page}
     return render(request, "posts/home.html", context)
 
 
