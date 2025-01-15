@@ -7,6 +7,7 @@ from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
+from posts.core import ReplyCreateForm
 from users.core import ProfileForm
 
 
@@ -49,9 +50,17 @@ def profile_view(request: HttpRequest, username=None) -> HttpResponse:
                 .filter(num_likes__gt=0)
                 .order_by("-num_likes")
             )
+            replyform = ReplyCreateForm()
             return render(
-                request, "snippets/loop_profile_comments.html", {"comments": comments}
+                request,
+                "snippets/loop_profile_comments.html",
+                {"comments": comments, "replyform": replyform},
             )
+        elif "liked-posts" in request.GET:
+            posts = profile.user.likedposts.order_by("-likedpost__created")
+            return render(request, "snippets/loop_profile_posts.html", {"posts": posts})
+        else:
+            return render(request, "snippets/loop_profile_posts.html", {"posts": posts})
 
     context = {"profile": profile, "posts": posts}
 
