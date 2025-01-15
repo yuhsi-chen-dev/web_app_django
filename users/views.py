@@ -2,10 +2,12 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models import Count
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
+from posts.core import ReplyCreateForm
 from users.core import ProfileForm
 
 
@@ -31,7 +33,35 @@ def profile_view(request: HttpRequest, username=None) -> HttpResponse:
             profile = request.user.profile
         except:
             raise Http404("User not found")
-    return render(request, "users/profile.html", {"profile": profile})
+
+    posts = profile.user.posts.all()
+
+    if request.htmx:
+        if "top-posts" in request.GET:
+            posts = (
+                profile.user.posts.annotate(num_likes=Count("likes"))
+                .filter(num_likes__gt=0)
+                .order_by("-num_likes")
+            )
+        elif "top-comments" in request.GET:
+            comments = (
+                profile.user.comments.annotate(num_likes=Count("likes"))
+                .filter(num_likes__gt=0)
+                .order_by("-num_likes")
+            )
+            replyform = ReplyCreateForm()
+            return render(
+                request,
+                "snippets/loop_profile_comments.html",
+                {"comments": comments, "replyform": replyform},
+            )
+        elif "liked-posts" in request.GET:
+            posts = profile.user.likedposts.order_by("-likedpost__created")
+        return render(request, "snippets/loop_profile_posts.html", {"posts": posts})
+
+    context = {"profile": profile, "posts": posts}
+
+    return render(request, "users/profile.html", context)
 
 
 @login_required
