@@ -21,10 +21,17 @@ def profile_view(request: HttpRequest, username=None) -> HttpResponse:
             the profile of the currently logged-in user will be shown.
 
     Returns:
-        HttpResponse: A rendered HTML response containing the profile page template, populated with the user's profile data.
+        HttpResponse: A rendered HTML response containing the profile page template, populated with the user's profile data
+                      and the user's posts. If the request is made via HTMX, a partial HTML response for the posts or comments
+                      is returned.
 
     Raises:
-        Http404: If the profile of the specified user cannot be found.
+        Http404: If the profile of the specified user cannot be found or if the logged-in user does not have a profile.
+
+    HTMX Options:
+        - `top-posts`: Fetches posts sorted by the number of likes, displaying only posts with likes greater than zero.
+        - `top-comments`: Fetches comments sorted by the number of likes, displaying only comments with likes greater than zero.
+        - `liked-posts`: Fetches posts that the user has liked, ordered by the time they were liked.
     """
     if username:
         profile = get_object_or_404(User, username=username).profile
