@@ -59,6 +59,23 @@ This project is a side project inspired by [Andreas Jud's YouTube tutorial](http
 
 7. Open your browser and navigate to `http://127.0.0.1:8000` to view the application.
 
+## Admin & Test User Credentials
+
+For testing and development purposes, the following accounts are available:
+| Role | Username | Password | Access Level |
+|----------|----------|----------|----------|
+| Superuser | admin | Ab123456! | Full access (admin panel & API) |
+| Test User | user  | Ab123456! | Regular user (basic functionalities) |
+
+### Admin Panel URL
+http://127.0.0.1:8000/admin/
+
+If you need to manually create a superuser, use the following command:
+   ```bash
+   python manage.py createssuperuser
+   ```
+
+
 ## Pre-commit Setup
 
 This project uses `pre-commit` hooks to maintain code quality and consistency. Hooks include tools like `isort` for sorting imports and `black` for code formatting.
