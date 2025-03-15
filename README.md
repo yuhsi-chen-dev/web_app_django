@@ -65,7 +65,7 @@ For testing and development purposes, the following accounts are available:
 | Role | Username | Password | Access Level |
 |----------|----------|----------|----------|
 | Superuser | admin | Ab123456! | Full access (admin panel & API) |
-| Test User | user  | password  | Regular user (basic functionalities) |
+| Test User | user  | Ab123456! | Regular user (basic functionalities) |
 
 ### Admin Panel URL
 http://127.0.0.1:8000/admin/
