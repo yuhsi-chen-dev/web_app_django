@@ -20,7 +20,7 @@ This project is a side project inspired by [Andreas Jud's YouTube tutorial](http
 
 ## Technology Stack
 
-- **Python**: 3.13
+- **Python**: 3.12
 - **Django**: with allauth, ORM, HTMX
 - **HTML/CSS**: For UI design
 - **Pre-commit**: Ensures code quality with hooks like `isort` and `black`
