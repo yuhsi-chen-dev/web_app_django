@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "web-app-with-django"
+name = "web_app_django"
 version = "0.1.0"
 description = ""
 authors = ["verna0214 <yuhsichen0214@gmail.com>"]
