@@ -23,3 +23,4 @@ Desktop.ini  # For Windows
 # Temporary files
 *.tmp
 *.bak
+staticfiles/

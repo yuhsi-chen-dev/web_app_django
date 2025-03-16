@@ -62,10 +62,10 @@ This project is a side project inspired by [Andreas Jud's YouTube tutorial](http
 ## Admin & Test User Credentials
 
 For testing and development purposes, the following accounts are available:
-| Role | Username | Password | Access Level |
-|----------|----------|----------|----------|
-| Superuser | admin | Ab123456! | Full access (admin panel & API) |
-| Test User | user  | Ab123456! | Regular user (basic functionalities) |
+| Role | Username | Email  | Password | Access Level |
+|----------|----------|----------|----------|----------|
+| Superuser | admin | admin@example.com | Ab123456! | Full access (admin panel & API) |
+| Test User | user | user@example.com  | Ab123456! | Regular user (basic functionalities) |
 
 ### Admin Panel URL
 http://127.0.0.1:8000/admin/
