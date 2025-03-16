@@ -6,7 +6,7 @@ authors = ["verna0214 <yuhsichen0214@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.13"
+python = "^3.12"
 pre-commit = "^4.0.1"
 django = "^5.1.4"
 beautifulsoup4 = "^4.12.3"
@@ -15,6 +15,8 @@ django-allauth = "0.54.0"
 pillow = "^11.1.0"
 django-cleanup = "^9.0.0"
 django-htmx = "1.16.0"
+gunicorn = "^23.0.0"
+python-dotenv = "^1.0.1"
 
 
 [build-system]
